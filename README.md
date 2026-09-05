@@ -61,7 +61,8 @@ cd ..
 
 **Terminal 1 — Start FastAPI ML Backend:**
 ```bash
-python backend/app.py
+cd backend
+python app.py
 ```
 *The API server will start on `http://localhost:8000` (FastAPI with Uvicorn).*
 
@@ -86,14 +87,18 @@ start.bat
 
 ---
 
-## 🎯 Supported Machine Identifiers
+## 🎯 Supported Machine Identifiers & Sample Test Inputs
 
 The calibrated ML models support the following 4 industrial machine IDs:
-1. **`fan_00`** (Industrial HVAC Blower #00 — Threshold $\tau = 0.054740$)
-2. **`fan_02`** (Cooling Tower Fan #02 — Threshold $\tau = 0.096651$)
-3. **`valve_00`** (High-Pressure Solenoid Valve #00 — Threshold $\tau = 0.344347$)
-4. **`valve_02`** (Pneumatic Actuator Valve #02 — Threshold $\tau = 0.385139$)
+1. **`fan_00`** (Industrial HVAC Blower #00 — Calibrated Threshold $\tau = 0.046377$)
+2. **`fan_02`** (Cooling Tower Fan #02 — Calibrated Threshold $\tau = 0.041695$)
+3. **`valve_00`** (High-Pressure Solenoid Valve #00 — Calibrated Threshold $\tau = 0.009380$)
+4. **`valve_02`** (Pneumatic Actuator Valve #02 — Calibrated Threshold $\tau = 0.016335$)
 
-### Audio File Requirement
-- Audio input must be uncompressed **`.wav`** recordings (16,000 Hz sampling rate recommended, 5 to 10 seconds duration).
-- Raw evaluation audio files are not included in the git repository. Testers/Judges can upload custom `.wav` files via the UI drag-and-drop zone or use the built-in quick-test recording buttons.
+### Sample Audio Files (`test_input/`)
+- Curated sample `.wav` audio files (10 normal, 10 abnormal per machine) are included directly in the repository under **`test_input/`**:
+  - `test_input/fan_00/normal/*.wav` & `test_input/fan_00/abnormal/*.wav`
+  - `test_input/fan_02/normal/*.wav` & `test_input/fan_02/abnormal/*.wav`
+  - `test_input/valve_00/normal/*.wav` & `test_input/valve_00/abnormal/*.wav`
+  - `test_input/valve_02/normal/*.wav` & `test_input/valve_02/abnormal/*.wav`
+- Testers and Judges can drag and drop these sample files into the UI drag-and-drop zone to test live machine diagnostics.
