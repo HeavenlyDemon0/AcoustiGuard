@@ -488,7 +488,10 @@ def predict(
     else:
         decision = "NORMAL"
 
-    cal_files = get_calibration_files(machine_id)
+    try:
+        cal_files = get_calibration_files(machine_id)
+    except Exception:
+        cal_files = []
 
     debug_log = {
         "machine_id": machine_id,
