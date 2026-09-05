@@ -27,7 +27,8 @@ yarn-error.log*
 # Datasets & Temporary Files
 handoff_data/
 *.wav
-!test_input/**/*.wav
+!test_input/
+!test_input/**
 windowed_data/
 6_dB_fan/
 6_dB_valve/
