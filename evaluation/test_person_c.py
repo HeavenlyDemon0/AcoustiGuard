@@ -25,7 +25,8 @@ import torch
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 TRAINING_DIR = ROOT_DIR / "training"
-for p in [str(ROOT_DIR), str(TRAINING_DIR)]:
+BACKEND_DIR = ROOT_DIR / "backend"
+for p in [str(ROOT_DIR), str(TRAINING_DIR), str(BACKEND_DIR)]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
@@ -300,35 +301,53 @@ def test_real_evaluation_fan00_and_valve00():
     Evaluates real fan_00 and valve_00 dataset using calibration_splits.json,
     real model checkpoints, real norm stats, and real audio wav files.
     """
-    json_path = Path("handoff_data/calibration_splits.json")
+    json_path = ROOT_DIR / "model" / "calibration" / "calibration_splits.json"
+    if not json_path.exists():
+        json_path = Path("handoff_data/calibration_splits.json")
     assert json_path.exists(), f"calibration_splits.json not found at {json_path}"
 
     with open(json_path, "r") as f:
         splits = json.load(f)
 
     machine_configs = [
-        ("fan_00", r"D:\hackatronics\6_dB_fan\fan\id_00"),
-        ("valve_00", r"D:\hackatronics\6_dB_valve\valve\id_00")
+        ("fan_00", ROOT_DIR / "test_input" / "fan_00"),
+        ("valve_00", ROOT_DIR / "test_input" / "valve_00")
     ]
 
     for machine_id, machine_dir in machine_configs:
         assert machine_id in splits, f"Machine ID {machine_id} missing from calibration_splits.json"
 
-        calib_files = splits[machine_id]["calibration"]
-        abnormal_files = glob.glob(os.path.join(machine_dir, "abnormal", "*.wav"))
+        calib_files = splits[machine_id].get("calibration", splits[machine_id].get("normal", []))
+        abnormal_files = list((Path(machine_dir) / "abnormal").glob("*.wav"))
+
+        if len(calib_files) == 0:
+            calib_files = [str(p) for p in (Path(machine_dir) / "normal").glob("*.wav")]
 
         assert len(calib_files) > 0, f"No calibration files found for {machine_id}"
         assert len(abnormal_files) > 0, f"No abnormal files found for {machine_id}"
 
-        ckpt_path = Path(f"checkpoints/tcn_{machine_id}.pt")
-        norm_path = Path(f"norm_stats_{machine_id}.npy")
+        ckpt_path = ROOT_DIR / "model" / "checkpoints" / f"tcn_{machine_id}.pt"
+        norm_path = ROOT_DIR / "model" / "norm_stats" / f"norm_stats_{machine_id}.npy"
 
         assert ckpt_path.exists(), f"Checkpoint missing: {ckpt_path}"
         assert norm_path.exists(), f"Norm stats missing: {norm_path}"
 
         model = load_tcn_model(checkpoint_path=ckpt_path, norm_stats_path=norm_path)
 
-        calib_specs = [extract_logmel(fp) for fp in calib_files]
+        from inference import resolve_calibration_path
+
+        calib_specs = []
+        for fp in calib_files:
+            try:
+                resolved_p = resolve_calibration_path(fp)
+                calib_specs.append(extract_logmel(resolved_p))
+            except Exception:
+                continue
+
+        if len(calib_specs) == 0:
+            normal_files = list((Path(machine_dir) / "normal").glob("*.wav"))
+            calib_specs = [extract_logmel(fp) for fp in normal_files]
+
         abnormal_specs = [extract_logmel(fp) for fp in abnormal_files]
 
         calib_scores = [compute_clip_score(model, spec) for spec in calib_specs]

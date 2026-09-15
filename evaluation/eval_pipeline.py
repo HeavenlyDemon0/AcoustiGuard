@@ -113,6 +113,8 @@ class CausalTCN(nn.Module):
 # MODEL LOADING AND NORMALIZATION UTILITIES
 # ============================================================
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
 def load_norm_stats(norm_stats_path: Union[str, Path]) -> Dict[str, float]:
     """
     Loads mean and std normalization statistics from an .npy file.
@@ -124,6 +126,18 @@ def load_norm_stats(norm_stats_path: Union[str, Path]) -> Dict[str, float]:
         dict: {"mean": float, "std": float}
     """
     norm_path = Path(norm_stats_path)
+    if not norm_path.exists():
+        candidates = [
+            ROOT_DIR / norm_path,
+            ROOT_DIR / "model" / norm_path,
+            ROOT_DIR / "model" / "norm_stats" / norm_path,
+            ROOT_DIR / "model" / "norm_stats" / norm_path.name,
+        ]
+        for cand in candidates:
+            if cand.exists():
+                norm_path = cand
+                break
+
     if not norm_path.exists():
         raise FileNotFoundError(f"Normalization stats file not found: '{norm_stats_path}'")
 
@@ -172,6 +186,18 @@ def load_tcn_model(
         CausalTCN: Loaded PyTorch model in eval mode.
     """
     ckpt_path = Path(checkpoint_path)
+    if not ckpt_path.exists():
+        candidates = [
+            ROOT_DIR / ckpt_path,
+            ROOT_DIR / "model" / ckpt_path,
+            ROOT_DIR / "model" / "checkpoints" / ckpt_path,
+            ROOT_DIR / "model" / "checkpoints" / ckpt_path.name,
+        ]
+        for cand in candidates:
+            if cand.exists():
+                ckpt_path = cand
+                break
+
     if not ckpt_path.exists():
         raise FileNotFoundError(f"Checkpoint file not found: '{checkpoint_path}'")
 

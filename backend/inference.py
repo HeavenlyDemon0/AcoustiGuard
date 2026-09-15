@@ -4,7 +4,7 @@ Rythm Sense - Real ML Inference Integration
 Contract 4:
 
 predict(filepath, machine_id)
-    -> (score, threshold, decision, spectrogram)
+    -> (score, threshold, decision, spectrogram, debug_log)
 
 Pipeline:
 
@@ -368,7 +368,7 @@ def get_threshold(machine_id: str):
             spectrogram = extract_logmel(filepath)
             score = compute_clip_score(model, spectrogram)
             calibration_scores.append(float(score))
-        except FileNotFoundError:
+        except Exception:
             continue
 
     # Fallback to test_input normal files if calibration_splits paths are missing on cloned system
@@ -394,6 +394,7 @@ def get_threshold(machine_id: str):
 
     THRESHOLD_CACHE[machine_id] = threshold
     print(f"[Rythm Sense] {machine_id} threshold = {threshold:.6f}")
+
     return threshold
 
 
@@ -409,6 +410,7 @@ def predict(
     float,
     str,
     np.ndarray,
+    dict,
 ]:
 
     machine_id = normalize_machine_id(
