@@ -43,6 +43,7 @@ from inference import (
     THRESHOLD_CACHE,
     get_threshold,
     get_calibration_files,
+    preload_all_models,
 )
 
 
@@ -76,6 +77,12 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
+
+
+@app.on_event("startup")
+def startup_event():
+    logger.info("Initializing application startup — preloading models...")
+    preload_all_models()
 
 
 # ============================================================

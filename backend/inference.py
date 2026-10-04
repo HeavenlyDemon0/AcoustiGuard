@@ -399,6 +399,25 @@ def get_threshold(machine_id: str):
 
 
 # ============================================================
+# PRELOAD ALL MODELS ON STARTUP
+# ============================================================
+
+def preload_all_models():
+    """
+    Preloads all CausalTCN models and computes/caches thresholds
+    once at application startup.
+    """
+    print("[Rythm Sense] Preloading all CausalTCN models and thresholds at app startup...")
+    for machine_id in MACHINE_CONFIG:
+        try:
+            get_model(machine_id)
+            get_threshold(machine_id)
+        except Exception as exc:
+            print(f"[Rythm Sense] Warning: Preloading failed for {machine_id}: {exc}")
+    print(f"[Rythm Sense] Preloaded {len(MODEL_CACHE)} model(s) into memory successfully.")
+
+
+# ============================================================
 # MAIN CONTRACT 4 FUNCTION
 # ============================================================
 
