@@ -436,5 +436,5 @@ if __name__ == "__main__":
 
         port=port,
 
-        reload=True,
+        reload=False,
     )
