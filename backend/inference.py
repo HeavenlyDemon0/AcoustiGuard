@@ -144,7 +144,12 @@ def normalize_machine_id(machine_id: str) -> str:
 
 MODEL_CACHE = {}
 
-THRESHOLD_CACHE = {}
+THRESHOLD_CACHE = {
+    "fan_00": 0.052601,
+    "fan_02": 0.092609,
+    "valve_00": 0.343326,
+    "valve_02": 0.144439,
+}
 
 
 # ============================================================
@@ -335,10 +340,10 @@ def get_model(machine_id: str):
 # ============================================================
 
 STATIC_FALLBACK_THRESHOLDS = {
-    "fan_00": 0.046377,
-    "fan_02": 0.041695,
-    "valve_00": 0.009380,
-    "valve_02": 0.016335,
+    "fan_00": 0.052601,
+    "fan_02": 0.092609,
+    "valve_00": 0.343326,
+    "valve_02": 0.144439,
 }
 
 def get_threshold(machine_id: str):

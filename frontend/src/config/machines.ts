@@ -47,7 +47,11 @@ export const MACHINE_CONFIGS: Record<MachineId, MachineConfig> = {
 };
 
 export const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  import.meta.env.VITE_API_BASE_URL !== undefined
+    ? import.meta.env.VITE_API_BASE_URL
+    : import.meta.env.DEV
+      ? 'http://localhost:8000'
+      : ''
 ).replace(/\/$/, '');
 
 export const IS_MOCK_MODE =

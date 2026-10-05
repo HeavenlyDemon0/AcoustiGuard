@@ -103,6 +103,7 @@ app.add_middleware(
 # ============================================================
 
 @app.get("/health")
+@app.get("/api/health")
 def health():
 
     return {
@@ -124,6 +125,7 @@ def health():
 # ============================================================
 
 @app.get("/")
+@app.get("/api")
 def root():
 
     return {
@@ -151,6 +153,7 @@ def root():
 # ============================================================
 
 @app.post("/predict")
+@app.post("/api/predict")
 async def predict_audio(
 
     file: UploadFile = File(...),
@@ -394,6 +397,8 @@ async def predict_audio(
 
 @app.post("/recalibrate")
 @app.get("/recalibrate")
+@app.post("/api/recalibrate")
+@app.get("/api/recalibrate")
 async def recalibrate_machine(machine_id: str = Form(None), machineId: str = Form(None)):
     mid = machine_id or machineId or "fan_00"
     norm_id = normalize_machine_id(mid)
